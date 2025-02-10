@@ -1,0 +1,29 @@
+name: Check Merge Conflicts
+
+on:
+  pull_request:
+    branches:
+      - main  # Change this to your base branch if different
+      - Arnav
+      - Aryan
+      - Jahesh
+
+jobs:
+  check-merge-conflicts:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Ensure full history for merge checks
+
+      - name: Check for merge conflicts
+        run: |
+          git fetch origin ${{ github.base_ref }} ${{ github.head_ref }}
+          git checkout ${{ github.base_ref }}
+          git merge --no-commit --no-ff ${{ github.head_ref }} || (
+            echo "❌ Merge conflicts detected!"
+            exit 1
+          )
+        shell: bash
